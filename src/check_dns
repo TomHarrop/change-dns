@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+new_dns="***.***.***.***"
+
+_dns_unset=0
+
+# get the current network service
+IFS=$'\n' services=( $(networksetup -listallnetworkservices) )
+current_service="${services[1]}"
+
+printf "current_service: %s\n" "${current_service}"
+
+# get the DNS for the current network service
+IFS=$'\n' current_dns=( $(networksetup -getdnsservers "${current_service}") )
+
+# check if the DNS is unset
+if [[ "${current_dns[0]}" == \
+	"There aren't any DNS Servers set on ${current_service}." ]]; then
+	printf "DNS is unset"
+	_dns_unset=1
+fi
+
+# parse current DNS for new_dns
+case "${current_dns[@]}" in
+	"${new_dns}")
+		printf "DNS is already set"
+		;;
+esac
+
+printf "    current_dns: %s\n" "${current_dns[@]}"
